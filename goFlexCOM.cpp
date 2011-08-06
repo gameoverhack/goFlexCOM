@@ -9,10 +9,10 @@
 
 #include "goFlexCOM.h"
 
-void goFlexCOM::setup(int port) {
+bool goFlexCOM::setup(int port) {
 	ofLog(OF_LOG_VERBOSE, "Setting up server and client for TCP communication with Flex");
 	
-	successServer = true;
+	successServer = false;
 	successServer = tcpServer.setup(port);
 
 	ofSetFrameRate(30);
@@ -20,7 +20,11 @@ void goFlexCOM::setup(int port) {
 	if (successServer) {
 		waitTime = ofGetElapsedTimeMillis();
 		state = LOAD;
-	} else state = ERROR;
+		return true;
+	} else {
+		state = ERROR;
+		return false;
+	}
 }
 
 void goFlexCOM::close() {

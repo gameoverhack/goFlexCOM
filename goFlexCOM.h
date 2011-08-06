@@ -36,7 +36,7 @@ class goFlexCOM {
 	
 public:
 	
-	void setup(int port=6666);
+	bool setup(int port=6666);
 	void update();
 	void close();
 	
