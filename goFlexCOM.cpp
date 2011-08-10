@@ -11,18 +11,18 @@
 
 bool goFlexCOM::setup(int port) {
 	ofLog(OF_LOG_VERBOSE, "Setting up server and client for TCP communication with Flex");
-	
+
 	successServer = false;
 	successServer = tcpServer.setup(port);
 
 	ofSetFrameRate(30);
-	
+
 	if (successServer) {
 		waitTime = ofGetElapsedTimeMillis();
-		state = LOAD;
+		state = kFLEXCOM_LOAD;
 		return true;
 	} else {
-		state = ERROR;
+		state = kFLEXCOM_ERROR;
 		return false;
 	}
 }
@@ -33,34 +33,34 @@ void goFlexCOM::close() {
 
 void goFlexCOM::update() {
 	if (successServer && tcpServer.getNumClients() >= 1) {
-		
+
 		string messageSND	= "";
-		
+
 		for(int i = 0; i < tcpServer.getNumClients(); i++){
-			
+
 			//ofLog(OF_LOG_VERBOSE, "STATE: %s", states[state].c_str());
-			
+
 			string messageRCV	= tcpServer.receive(i);;
-			
+
 			switch (state) {
-				case HAND:
-					ofLog(OF_LOG_VERBOSE, "Sending HAND shake");
-					messageSND = "HAND";
-					state = SHAKE;
+				case kFLEXCOM_HAND:
+					ofLog(OF_LOG_VERBOSE, "Sending kFLEXCOM_HAND kFLEXCOM_SHAKE");
+					messageSND = "kFLEXCOM_HAND";
+					state = kFLEXCOM_SHAKE;
 					break;
-				case SHAKE:
-					if (messageRCV == "SHAKE") {
-						ofLog(OF_LOG_VERBOSE, "Received hand SHAKE");
-						state = READY;
+				case kFLEXCOM_SHAKE:
+					if (messageRCV == "kFLEXCOM_SHAKE") {
+						ofLog(OF_LOG_VERBOSE, "Received kFLEXCOM_HAND kFLEXCOM_SHAKE");
+						state = kFLEXCOM_READY;
 					} else {
 						if (ofGetElapsedTimeMillis() > waitTime + MAX_WAIT_TIME) {
 							waitTime = ofGetElapsedTimeMillis();
-							state = HAND;
+							state = kFLEXCOM_HAND;
 						}
 					}
 
 					break;
-				case READY:
+				case kFLEXCOM_READY:
 					if (messageRCV != "") {
 						ofLog(OF_LOG_VERBOSE, "TCPRCV: %s", messageRCV.c_str());
 						ofNotifyEvent(messageReceived, messageRCV, this);
@@ -71,25 +71,25 @@ void goFlexCOM::update() {
 						if (messageRCV == "BYE") {
 							ofSleepMillis(2000);
 							waitTime = ofGetElapsedTimeMillis();
-							state = LOAD;
+							state = kFLEXCOM_LOAD;
 						}
 					}
 					break;
-				case ERROR:
-					ofLog(OF_LOG_VERBOSE, "ERROR!!!");
+				case kFLEXCOM_ERROR:
+					ofLog(OF_LOG_VERBOSE, "kFLEXCOM_ERROR!!!");
 					break;
 				default:
 					break;
 			}
-			
+
 		}
 
 		if (messageSND != "") {
 			sendToAll(messageSND);
 		}
-		
+
 	}
-	
+
 }
 
 void goFlexCOM::sendToAll(string messageSND) {
