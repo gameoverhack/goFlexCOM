@@ -44,13 +44,13 @@ void goFlexCOM::update() {
 
 			switch (state) {
 				case kFLEXCOM_HAND:
-					ofLog(OF_LOG_VERBOSE, "Sending kFLEXCOM_HAND kFLEXCOM_SHAKE");
-					messageSND = "kFLEXCOM_HAND";
+					ofLog(OF_LOG_VERBOSE, "Sending hand shake");
+					messageSND = "HAND";
 					state = kFLEXCOM_SHAKE;
 					break;
 				case kFLEXCOM_SHAKE:
-					if (messageRCV == "kFLEXCOM_SHAKE") {
-						ofLog(OF_LOG_VERBOSE, "Received kFLEXCOM_HAND kFLEXCOM_SHAKE");
+					if (messageRCV == "SHAKE") {
+						ofLog(OF_LOG_VERBOSE, "Received hand shake");
 						state = kFLEXCOM_READY;
 					} else {
 						if (ofGetElapsedTimeMillis() > waitTime + MAX_WAIT_TIME) {
